@@ -2,7 +2,10 @@
 parse log file and extract useful data in a dynamic table.
 
 ## Note
-this tools write for specific application log and need to fork and change implementation to support 
+this tools write for specific application log and need to fork and change implementation to support other log format.<br>
+
+## sample log format
+[INFO]  2020-06-29T22:36:52.434 channel:channel-ip   thread:[thread-number] client:[client-id] session_id:[sesstion-id] package.Class.<init>@100:
 
 ## How build
 - install maven
