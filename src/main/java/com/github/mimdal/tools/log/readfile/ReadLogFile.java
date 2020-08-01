@@ -81,7 +81,6 @@ public class ReadLogFile {
 
     private LogEntity logEntityCreation(String aLogLine, int lineNumber, Matcher matcher) {
         return LogEntity.builder()
-                .firstLine(aLogLine)
                 .lineNumber(Utils.formatNumber(lineNumber))
                 .time(Utils.stringToDate(matcher.group(Constants.TIME_MATCHER).trim()))
                 .level(highlightLogLevel(matcher.group(Constants.LOG_LEVEL_MATCHER).trim()))
@@ -90,7 +89,7 @@ public class ReadLogFile {
                 .client(matcher.group(Constants.CLIENT_MATCHER).trim())
                 .session(matcher.group(Constants.SESSION_MATCHER).trim())
                 .className(extractCLassName(matcher.group(Constants.CLASS_MATCHER).trim()))
-                .content(new StringJoiner(Constants.NEW_LINE_CHAR, "", ""))
+                .content(new StringJoiner(Constants.NEW_LINE_CHAR, "", "").add(aLogLine))
                 .build();
     }
 

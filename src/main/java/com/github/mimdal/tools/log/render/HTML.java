@@ -88,13 +88,11 @@ public class HTML {
             String backToHome = BACK_TO_HOME_START_TAG + fileName + BACK_TO_HOME_END_TAG;
             StringJoiner content = new StringJoiner("\n", "", "")
                     .add("Line Number: " + log.getLineNumber())
-                    .add(log.getFirstLine())
                     .merge(log.getContent());
             if (log.getRelatedLogs() != null && !log.getRelatedLogs().isEmpty()) {
                 log.getRelatedLogs().forEach(logEntity ->
                         content.add(HTML_HORIZONTAL_LINE)
                                 .add("Line Number: " + logEntity.getLineNumber())
-                                .add(logEntity.getFirstLine())
                                 .merge(logEntity.getContent()));
             }
             String htmlString = ThirdPartyUtils.inputStreamToString(inputStream)

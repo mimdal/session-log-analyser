@@ -29,7 +29,6 @@ public class SaveSessionLog {
         StringBuilder sessionExtracted = new StringBuilder();
         for (LogEntity log : sessionLogEntities) {
             sessionExtracted
-                    .append(log.getFirstLine())
                     .append(log.getContent());
         }
         ThirdPartyUtils.writeStringToFile(newHtmlFile, sessionExtracted.toString());

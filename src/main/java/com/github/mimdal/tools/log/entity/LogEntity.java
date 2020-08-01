@@ -17,7 +17,6 @@ import java.util.*;
 public class LogEntity {
     private String lineNumber;
     private LocalDateTime time;
-    private String firstLine;
     private String level;
     private String channel;
     private String thread;
