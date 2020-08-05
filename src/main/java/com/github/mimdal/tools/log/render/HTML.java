@@ -1,7 +1,8 @@
 package com.github.mimdal.tools.log.render;
 
-import com.github.mimdal.tools.log.entity.LogEntity;
+import com.github.mimdal.tools.log.chain.*;
 import com.github.mimdal.tools.log.dto.CurrentLogParams;
+import com.github.mimdal.tools.log.entity.LogEntity;
 import com.github.mimdal.tools.log.thirdparty.ThirdPartyUtils;
 
 import java.io.*;
@@ -16,18 +17,28 @@ import static com.github.mimdal.tools.log.constants.Constants.*;
  * @author M.dehghan
  * @since 2020-07-29
  */
-public class HTML {
-    private CurrentLogParams currentLogParams;
-    private List<LogEntity> logList;
+public class HTML implements LogProcess {
     private String fileName;
+    private List<LogEntity> logList;
+    private CurrentLogParams currentLogParams;
 
-    public HTML(CurrentLogParams currentLogParams, List<LogEntity> logList) {
-        this.currentLogParams = currentLogParams;
-        this.logList = logList;
+    {
         fileName = OUT_PUT_FILE_NAME + ".html";
     }
 
-    public void generate() throws IOException {
+    @Override
+    public void setNext(LogProcess next) {
+        //there is no next chain
+    }
+
+    @Override
+    public void process(WrapperObject wrapperObject) {
+        logList = wrapperObject.getSessionLogEntities();
+        currentLogParams = wrapperObject.getCurrentLogParams();
+        generate();
+    }
+
+    public void generate() {
         InputStream inputStream = readFileFromResourceDir("dynamic-table.html");
 
         String thread = currentLogParams.getThread();
@@ -53,7 +64,7 @@ public class HTML {
         return classloader.getResourceAsStream(fileName);
     }
 
-    private String generateTableRows() throws IOException {
+    private String generateTableRows() {
         StringBuilder outPut = new StringBuilder();
         int incrementItemNumber = 1;
         LocalTime firstLogTime = logList.get(0).getTime().toLocalTime();
@@ -115,5 +126,4 @@ public class HTML {
                 INCOMING_ISO_MSG_TAG + COMMA_PLUS_SPACE_DELIMITER +
                 OUTGOING_ISO_MSG_TAG;
     }
-
 }

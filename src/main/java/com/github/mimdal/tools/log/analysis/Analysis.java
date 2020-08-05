@@ -1,5 +1,6 @@
 package com.github.mimdal.tools.log.analysis;
 
+import com.github.mimdal.tools.log.chain.*;
 import com.github.mimdal.tools.log.constants.Constants;
 import com.github.mimdal.tools.log.entity.LogEntity;
 
@@ -9,19 +10,20 @@ import java.util.*;
  * @author M.dehghan
  * @since 2020-07-28
  */
-public class Analysis {
-    private List<LogEntity> sessionLogEntities;
+public class Analysis implements LogProcess {
+    private LogProcess next;
     private Map<String, LogEntity> responseIndicatorRequestMap;
-    private Statistics statistics;
 
-    public void setSessionLogEntities(List<LogEntity> sessionLogEntities) {
-        this.sessionLogEntities = sessionLogEntities;
+    @Override
+    public void setNext(LogProcess next) {
+        this.next = next;
     }
 
-    public void process() {
+    @Override
+    public void process(WrapperObject wrapperObject) {
         fieldInitialize();
         LogEntity removeLogFromMap = null;
-        for (LogEntity log : sessionLogEntities) {
+        for (LogEntity log : wrapperObject.getSessionLogEntities()) {
             String logContent = log.getContent().toString();
             if (logContent.contains(Constants.SERVICE_REQUEST_LOG_INDICATOR)) {
                 String firstLine = logContent.split("\n")[0];
@@ -42,6 +44,7 @@ public class Analysis {
                 responseIndicatorRequestMap.remove(removeLogFromMap);
             }
         }
+        next.process(wrapperObject);
     }
 
     private void fieldInitialize() {

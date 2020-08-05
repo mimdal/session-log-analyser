@@ -1,6 +1,7 @@
 package com.github.mimdal.tools.log.entrypoint;
 
 import com.github.mimdal.tools.log.analysis.Analysis;
+import com.github.mimdal.tools.log.chain.*;
 import com.github.mimdal.tools.log.extract.SaveSessionLog;
 import com.github.mimdal.tools.log.render.HTML;
 import com.github.mimdal.tools.log.dto.CurrentLogParams;
@@ -35,25 +36,26 @@ public class ApplicationLoader implements Callable {
     }
 
     @Override
-    public Object call() throws Exception {
+    public Object call() {
         if (usageHelpRequested) {
             new CommandLine(new ApplicationLoader()).usage(System.out);
         }
-        CurrentLogParams currentLogParams = new CurrentLogParams(sampleLog.trim());
-        ReadLogFile readLogFile = new ReadLogFile(currentLogParams);
-
-        readLogFile.processLogFile(logFile);
-
-        Analysis analysis = new Analysis();
-        analysis.setSessionLogEntities(readLogFile.getSessionLogEntities());
-        analysis.process();
-
-        SaveSessionLog saveSessionLog = new SaveSessionLog(readLogFile.getSessionLogEntities(), currentLogParams);
-        saveSessionLog.saveToFile();
-
-        HTML htmlRendering = new HTML(currentLogParams, readLogFile.getSessionLogEntities());
-        htmlRendering.generate();
-
+        chainCall();
         return null;
+    }
+
+    private void chainCall() {
+        LogProcess chain_1 = new ReadLogFile(logFile);
+        LogProcess chain_2 = new Analysis();
+        LogProcess chain_3 = new SaveSessionLog();
+        LogProcess chain_4 = new HTML();
+        chain_1.setNext(chain_2);
+        chain_2.setNext(chain_3);
+        chain_3.setNext(chain_4);
+        chain_1.process(
+                WrapperObject.builder()
+                        .currentLogParams(new CurrentLogParams(sampleLog.trim()))
+                        .build()
+        );
     }
 }

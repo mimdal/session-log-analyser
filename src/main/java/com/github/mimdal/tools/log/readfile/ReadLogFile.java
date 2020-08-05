@@ -1,5 +1,7 @@
 package com.github.mimdal.tools.log.readfile;
 
+import com.github.mimdal.tools.log.analysis.Analysis;
+import com.github.mimdal.tools.log.chain.*;
 import com.github.mimdal.tools.log.constants.Constants;
 import com.github.mimdal.tools.log.dto.CurrentLogParams;
 import com.github.mimdal.tools.log.entity.LogEntity;
@@ -16,8 +18,10 @@ import java.util.regex.*;
  * @author M.dehghan
  * @since 2020-07-27
  */
-public class ReadLogFile {
-    private CurrentLogParams currentLogParams;
+public class ReadLogFile implements LogProcess {
+    private LogProcess next;
+    private String filePath;
+    private CurrentLogParams sampleSessionLog;
     private Pattern pattern;
     private List<LogEntity> sessionLogEntities;
     private boolean addLineToContent;
@@ -26,15 +30,18 @@ public class ReadLogFile {
     private LogEntity logEntity;
     private int sessionMaxLiveInMinutes;
 
-    public ReadLogFile(CurrentLogParams currentLogParams) {
-        this.currentLogParams = currentLogParams;
+    public ReadLogFile(String filePath) {
+        this.filePath = filePath;
     }
 
-    public List<LogEntity> getSessionLogEntities() {
-        return sessionLogEntities;
+    @Override
+    public void setNext(LogProcess next) {
+        this.next = next;
     }
 
-    public void processLogFile(String filePath) throws IOException {
+    @Override
+    public void process(WrapperObject wrapperObject) {
+        sampleSessionLog = wrapperObject.getCurrentLogParams();
         fieldInitialize();
         int lineNumber = 1;
         try (LineIterator it = FileUtils.lineIterator(new File(filePath), "UTF-8")) {
@@ -44,11 +51,15 @@ public class ReadLogFile {
                 lineNumber++;
             }
             System.out.println("max lineNumber read= " + lineNumber);
+        } catch (IOException e) {
+            Utils.systemExit("file not exist, filePath = " + filePath);
         }
         System.out.println("sessionLogEntities = " + sessionLogEntities.size());
         if (sessionLogEntities.isEmpty()) {
             Utils.systemExit("zero result FOUND! try again by new arguments.");
         }
+        wrapperObject.setSessionLogEntities(sessionLogEntities);
+        next.process(wrapperObject);
     }
 
     private void fieldInitialize() {
@@ -134,10 +145,10 @@ public class ReadLogFile {
 
     private boolean isRelatedToCurrentLogParams(Matcher matcher) {
         //todo hardcode section: dependent to specific logs
-        return ((currentLogParams.getSession().equals(matcher.group(Constants.SESSION_MATCHER).trim())) ||
+        return ((sampleSessionLog.getSession().equals(matcher.group(Constants.SESSION_MATCHER).trim())) ||
                 (matcher.group(Constants.SESSION_MATCHER).isEmpty() &&
-                        currentLogParams.getChannel().equals(matcher.group(Constants.CHANNEL_MATCHER).trim()) &&
-                        currentLogParams.getClient().equals(matcher.group(Constants.CLIENT_MATCHER).trim())));
+                        sampleSessionLog.getChannel().equals(matcher.group(Constants.CHANNEL_MATCHER).trim()) &&
+                        sampleSessionLog.getClient().equals(matcher.group(Constants.CLIENT_MATCHER).trim())));
     }
 
     private void loopBreakIfLogout(String aLogLine) {
