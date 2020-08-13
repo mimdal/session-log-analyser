@@ -17,5 +17,5 @@ import java.util.*;
 public class WrapperObject {
     private CurrentLogParams currentLogParams;
     private List<LogEntity> sessionLogEntities;
-    private Set<String> sessionThreads;
+    private Map<String, String> sessionThreads;
 }

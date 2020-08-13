@@ -21,7 +21,7 @@ public class HTML implements LogProcess {
     private String fileName;
     private List<LogEntity> logList;
     private CurrentLogParams currentLogParams;
-    private Set<String> sessionThreads;
+    private Map<String, String> sessionThreads;
 
     {
         fileName = OUT_PUT_FILE_NAME + ".html";
@@ -48,7 +48,7 @@ public class HTML implements LogProcess {
         String statistics = "";
 
         String htmlString = ThirdPartyUtils.inputStreamToString(inputStream)
-                .replace("$sessionThreads", sessionThreads.toString())
+                .replace("$sessionThreads", getThreadsFormattedName())
                 .replace("$session", session)
                 .replace("$filters", filters)
                 .replace("$statistics", statistics)
@@ -57,6 +57,14 @@ public class HTML implements LogProcess {
                 currentLogParams.getSession() != null ? currentLogParams.getSession() : "without-session",
                 fileName));
         ThirdPartyUtils.writeStringToFile(newHtmlFile, htmlString);
+    }
+
+    private String getThreadsFormattedName() {
+        StringJoiner returnValue = new StringJoiner(COMMA_PLUS_SPACE_DELIMITER);
+        for (Map.Entry<String, String> entry : sessionThreads.entrySet()) {
+            returnValue.add(entry.getKey() + "(" + entry.getValue() + ")");
+        }
+        return returnValue.toString();
     }
 
     private InputStream readFileFromResourceDir(String fileName) {

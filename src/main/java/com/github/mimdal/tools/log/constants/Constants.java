@@ -56,4 +56,6 @@ public class Constants {
     public static final String INCOMING_ISO_MSG_TAG = "incoming isomsg";
     public static final String OUTGOING_ISO_MSG_TAG = "outgoing isomsg";
     public static final String STATISTICS_TAG = "statistics";
+
+    public static final String THREAD_PREFIX = "Thread-";
 }
