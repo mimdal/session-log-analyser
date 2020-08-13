@@ -21,6 +21,7 @@ public class HTML implements LogProcess {
     private String fileName;
     private List<LogEntity> logList;
     private CurrentLogParams currentLogParams;
+    private Set<String> sessionThreads;
 
     {
         fileName = OUT_PUT_FILE_NAME + ".html";
@@ -34,21 +35,20 @@ public class HTML implements LogProcess {
     @Override
     public void process(WrapperObject wrapperObject) {
         logList = wrapperObject.getSessionLogEntities();
+        sessionThreads = wrapperObject.getSessionThreads();
         currentLogParams = wrapperObject.getCurrentLogParams();
         generate();
     }
 
     public void generate() {
         InputStream inputStream = readFileFromResourceDir("dynamic-table.html");
-
-        String thread = currentLogParams.getThread();
         String session = currentLogParams.getSession();
         String filters = getFilterTags();
         String table = generateTableRows();
         String statistics = "";
 
         String htmlString = ThirdPartyUtils.inputStreamToString(inputStream)
-                .replace("$thread", thread)
+                .replace("$sessionThreads", sessionThreads.toString())
                 .replace("$session", session)
                 .replace("$filters", filters)
                 .replace("$statistics", statistics)

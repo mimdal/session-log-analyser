@@ -4,7 +4,7 @@ import com.github.mimdal.tools.log.dto.CurrentLogParams;
 import com.github.mimdal.tools.log.entity.LogEntity;
 import lombok.*;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * @author M.dehghan
@@ -17,4 +17,5 @@ import java.util.List;
 public class WrapperObject {
     private CurrentLogParams currentLogParams;
     private List<LogEntity> sessionLogEntities;
+    private Set<String> sessionThreads;
 }

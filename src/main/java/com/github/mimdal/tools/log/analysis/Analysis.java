@@ -13,6 +13,7 @@ import java.util.*;
 public class Analysis implements LogProcess {
     private LogProcess next;
     private Map<String, LogEntity> responseIndicatorRequestMap;
+    private Set<String> sessionThreads;
 
     @Override
     public void setNext(LogProcess next) {
@@ -24,6 +25,7 @@ public class Analysis implements LogProcess {
         fieldInitialize();
         LogEntity removeLogFromMap = null;
         for (LogEntity log : wrapperObject.getSessionLogEntities()) {
+            sessionThreads.add(log.getThread());
             String logContent = log.getContent().toString();
             if (logContent.contains(Constants.SERVICE_REQUEST_LOG_INDICATOR)) {
                 String firstLine = logContent.split("\n")[1];
@@ -44,10 +46,12 @@ public class Analysis implements LogProcess {
                 responseIndicatorRequestMap.remove(removeLogFromMap);
             }
         }
+        wrapperObject.setSessionThreads(sessionThreads);
         next.process(wrapperObject);
     }
 
     private void fieldInitialize() {
         responseIndicatorRequestMap = new HashMap<>();
+        sessionThreads = new HashSet<>();
     }
 }
