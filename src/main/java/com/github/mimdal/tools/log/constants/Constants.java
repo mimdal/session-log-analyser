@@ -58,4 +58,6 @@ public class Constants {
     public static final String STATISTICS_TAG = "statistics";
 
     public static final String THREAD_PREFIX = "Thread-";
+    public static final String OPEN_PARENTHESIS = "(";
+    public static final String CLOSE_PARENTHESIS = ")";
 }

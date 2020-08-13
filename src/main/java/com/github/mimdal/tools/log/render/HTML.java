@@ -61,9 +61,9 @@ public class HTML implements LogProcess {
 
     private String getThreadsFormattedName() {
         StringJoiner returnValue = new StringJoiner(COMMA_PLUS_SPACE_DELIMITER);
-        for (Map.Entry<String, String> entry : sessionThreads.entrySet()) {
-            returnValue.add(entry.getKey() + "(" + entry.getValue() + ")");
-        }
+        sessionThreads.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .forEach(entry -> returnValue.add(entry.getKey() + OPEN_PARENTHESIS + entry.getValue() + CLOSE_PARENTHESIS));
         return returnValue.toString();
     }
 
