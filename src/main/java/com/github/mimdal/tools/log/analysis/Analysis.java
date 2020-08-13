@@ -26,7 +26,7 @@ public class Analysis implements LogProcess {
         for (LogEntity log : wrapperObject.getSessionLogEntities()) {
             String logContent = log.getContent().toString();
             if (logContent.contains(Constants.SERVICE_REQUEST_LOG_INDICATOR)) {
-                String firstLine = logContent.split("\n")[0];
+                String firstLine = logContent.split("\n")[1];
                 String serviceName = firstLine.trim().split(Constants.REQUEST)[0];
                 log.setUsefulData(serviceName);
                 String serviceResponseLogIndicator = "\t" + serviceName + Constants.RESPONSE;
